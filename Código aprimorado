@@ -1,0 +1,177 @@
+#importamos o recurso time para atrasar ou acelerar comandos 
+import time
+
+
+
+
+
+#============================================================
+# ============================================================
+# SISTEMA PAPELARIA PONTO CERTO
+# Funcionalidades: cadastrar produtos (com validação de preço)
+#                  e consultar produtos pelo nome.
+#                  consultar produtos pelo nome
+#                  e realizar pagamentos com saldo bancário.
+# ============================================================
+
+# Lista global que armazena os produtos cadastrados.
+# Cada produto é uma tupla: (nome, preco)
+produtos = []
+
+# Saldo inicial da conta bancária.
+saldo = 10000.00
+
+
+# ------------------------------------------------------------
+# #Define tamanho da largura do menu
+dmns_tamanho=120
+
+ 
+# função com parãmetro quatidade de produtos
+def mostrar_menu(qtd_produtos):
+
+
+    print("\n"+"====================PAPELARIA PONTO CERTO ====================".center(dmns_tamanho))
+    time.sleep(0.5)
+    print(f"Produtos cadastrados:{qtd_produtos}".center(dmns_tamanho))
+    time.sleep(0.3)
+    print("1. Cadastrar produto".center(dmns_tamanho))
+    time.sleep(0.3)
+    print("2. Consultar produto".center(dmns_tamanho))
+    time.sleep(0.3)
+    print("3. Consultar saldo ".center(dmns_tamanho))
+    time.sleep(0.3)
+    print("4. Realizar pagamento ".center(dmns_tamanho))
+    time.sleep(0.3)
+    print("0. Sair".center(dmns_tamanho))
+    time.sleep(0.6)
+    print("\n"+"=====================================================".center(dmns_tamanho))
+
+ #função com parâmetro produtos
+def cadastrar_produto(produtos):
+     #Validamos como falso para que sua condição verdadeira quebre o laço 
+    nome_validate=False
+
+    while not nome_validate:
+         # .strip() remove espaços vazios acidentais no início/fim.
+        nome = input("Nome do produto: ".center(dmns_tamanho)).strip()
+         # .replace() admite palavras compostas com espaço ou hífen no meio.
+         # .isalpha() admite restritamente palavras do alfabeto.
+         # nome!= variável nome precisa ser diferente ( !="" ) de vazio.
+         # Assim, garante que produtos são armazenados com apenas letras.
+         # e que não são armazenados espaços.
+        if nome.replace(" ","").replace("-","").isalpha() and nome!="":
+            nome_validate=True
+        else:
+            print("Nome inválido. Digite apenas letras e espaços.".center(dmns_tamanho))
+
+     #Validamos como falso para que sua condição verdadeira quebre o laço 
+    preco_validate=False 
+
+    # Enquanto o preço NÃO for válido, continua pedindo.
+    while not preco_validate:
+        try:
+            entrada_preco=(input("Preço do produto (maior que zero): ".center(dmns_tamanho))).replace(",",".")
+            preco = float(entrada_preco)
+            
+
+            if preco > 0:
+                preco_validate = True  # preço válido -> sai do laço
+            else:
+                print("Preço inválido. Digite um valor maior que zero.".center(dmns_tamanho)) 
+
+        except ValueError:
+             # Entra aqui se o usuário digitar letras ou símbolos inválidos
+            print("Entrada inválida. Digite uma entrada com apenas números.".center(dmns_tamanho))
+      
+    
+    # Só chega aqui se o preço for válido.
+    produtos.append((nome, preco))
+    print("Produto cadastrado com sucesso!".center(dmns_tamanho))
+#------------------------------------------------------------
+def consultar_produto(produtos):
+    nome_busca = input("Digite o nome do produto: ".center(dmns_tamanho))
+
+    encontrado = False
+    i = 0
+
+    # Continua enquanto houver itens E o produto não foi achado.
+    while i < len(produtos) and not encontrado:
+        if produtos[i][0] == nome_busca:
+            print(
+                f"Produto encontrado: "
+                f"{produtos[i][0]} - R$ {produtos[i][1]:.2f}"
+            .center(dmns_tamanho))
+            encontrado = True
+
+        i += 1
+
+    # Se saiu do laço sem encontrar, avisa o usuário
+    if not encontrado:
+        print("Produto não encontrado.".center(dmns_tamanho))
+
+
+# ------------------------------------------------------------
+# FUNÇÃO: realizar_pagamento
+# Recebe o saldo atual e solicita o valor do pagamento.
+# O pagamento só é realizado se o valor for maior que zero
+# e menor ou igual ao saldo disponível.
+# Ao final, retorna o saldo atualizado.
+# ------------------------------------------------------------
+
+def realizar_pagamento(gasto):
+    
+    try:
+        valor = float(input("Valor do pagamento: R$ "))
+
+        if valor > 0 and valor <= saldo:
+            saldo = gasto - valor
+            print("Pagamento realizado com sucesso!".center(dmns_tamanho))
+            print(f"Saldo atualizado: R$ {saldo:.2f}".center(dmns_tamanho))
+
+        elif valor <= 0:
+            print("Valor inválido. Digite um valor maior que zero.".center(dmns_tamanho))
+
+        else:
+             print("Entrada inválida. Digite um valor numérico.".center(dmns_tamanho))
+
+    except ValueError:
+       print("Saldo insuficiente.".center(dmns_tamanho))
+
+    return saldo
+
+# ------------------------------------------------------------
+# PROGRAMA PRINCIPAL
+# Menu com loop principal. Cada opção chama uma função.
+# A estrutura do menu NÃO muda ao adicionar a consulta:
+# basta incluir um novo "elif" para a opção 2.
+# ------------------------------------------------------------
+
+continuar = True
+
+
+
+while continuar:
+    mostrar_menu(len(produtos))
+    opcao = input("Escolha uma opção:".center(dmns_tamanho))
+
+    if opcao == "1":
+        cadastrar_produto(produtos)
+
+    elif opcao == "2":
+        consultar_produto(produtos)   # <- integração da nova função
+
+    elif opcao=="3":
+     print(f"Saldo total: ${saldo:.2f}")    
+
+    elif opcao=="4":
+     print("Veja seu saldo total antes de realizar pagamento.")   
+     realizar_pagamento(saldo)
+
+    elif opcao == "0":
+        continuar = False
+        print("Encerrando o sistema.") 
+        time.sleep(1.5)
+        print("Até logo!") 
+    else:
+        print("Opção inválida.")
